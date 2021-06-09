@@ -10,6 +10,18 @@ const CENTER = {
 const RADIUS = 300;
 const RING_SIZE = 25;
 
+const LEFT_VERTEX = {
+    x: CENTER.x - (Math.cos(Math.PI / 6) * RADIUS),
+    y: CENTER.y + (Math.sin(Math.PI / 6) * RADIUS),
+};
+const TOP_VERTEX = {
+    x: CENTER.x,
+    y: CENTER.y - RADIUS,
+};
+const RIGHT_VERTEX = {
+    x: CENTER.x + (Math.cos(Math.PI / 6) * RADIUS),
+    y: CENTER.y + (Math.sin(Math.PI / 6) * RADIUS),
+};
 
 /* DRAW */
 
@@ -41,16 +53,13 @@ function drawRing() {
 // Draw a triangle in the ring
 //
 function drawTriangle() {
-    const cos30 = Math.cos(Math.PI / 6) * RADIUS;
-    const sin30 = Math.sin(Math.PI / 6) * RADIUS;
-
     ctx.fillStyle = "#00F";
 
     ctx.beginPath();
-    ctx.moveTo(CENTER.x, CENTER.y - RADIUS);
-    ctx.lineTo(CENTER.x + cos30, CENTER.y + sin30);
-    ctx.lineTo(CENTER.x - cos30, CENTER.y + sin30);
-    ctx.lineTo(CENTER.x, CENTER.y - RADIUS);
+    ctx.moveTo(LEFT_VERTEX.x, LEFT_VERTEX.y);
+    ctx.lineTo(TOP_VERTEX.x, TOP_VERTEX.y);
+    ctx.lineTo(RIGHT_VERTEX.x, RIGHT_VERTEX.y);
+    ctx.lineTo(LEFT_VERTEX.x, LEFT_VERTEX.y);
     ctx.closePath();
     ctx.fill();
 }
@@ -96,24 +105,11 @@ function checkRingClick(pos) {
 // It checks if the Y coordinate is superior than the height (Y increase as we go "down")
 //
 function checkTriangleClick(pos) {
-    const leftVertex = {
-        x: CENTER.x - (Math.cos(Math.PI / 6) * RADIUS),
-        y: CENTER.y + (Math.sin(Math.PI / 6) * RADIUS),
-    };
-    const topVertex = {
-        x: CENTER.x,
-        y: CENTER.y - RADIUS,
-    };
-    const rightVertex = {
-        x: CENTER.x + (Math.cos(Math.PI / 6) * RADIUS),
-        y: CENTER.y + (Math.sin(Math.PI / 6) * RADIUS),
-    };
-
     if (pos.x >= CENTER.x - RADIUS && pos.x <= CENTER.y + RADIUS
-    && pos.y <= leftVertex.y) {
+    && pos.y <= LEFT_VERTEX.y) {
         const values = pos.x <= CENTER.x
-            ? calcLinearFctFactors(leftVertex, topVertex)
-            : calcLinearFctFactors(topVertex, rightVertex);
+            ? calcLinearFctFactors(LEFT_VERTEX, TOP_VERTEX)
+            : calcLinearFctFactors(TOP_VERTEX, RIGHT_VERTEX);
         const height = values.a * pos.x + values.b;
 
         return (pos.y >= height);
