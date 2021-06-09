@@ -70,9 +70,10 @@ function drawTriangle() {
 document.addEventListener("click", onClick);
 
 function onClick(event) {
+    const canvasBounds = canvas.getBoundingClientRect();
     const pos = {
-        x: event.pageX,
-        y: event.pageY,
+        x: event.clientX - canvasBounds.x,
+        y: event.clientY - canvasBounds.y,
     };
 
     if (checkRingClick(pos))
@@ -84,7 +85,7 @@ function onClick(event) {
 }
 
 //
-// Return 1 if the given position is inside the ring
+// Return TRUE if the given position is inside the ring
 // Calculate the distance between the center and the point
 // Check if the distance is between the two circles radius
 //
@@ -97,7 +98,7 @@ function checkRingClick(pos) {
 }
 
 //
-// Return 1 if the given position is inside the triangle
+// Return TRUE if the given position is inside the triangle
 // First, check if the X coordinate corresponds with the triangle base and if the click is not under the triangle
 // The left and right edges are considered as linear function
 // It calculates the a factor and b value ( f(x) = a * x + b )
@@ -107,14 +108,14 @@ function checkRingClick(pos) {
 function checkTriangleClick(pos) {
     if (pos.x >= LEFT_VERTEX.x && pos.x <= RIGHT_VERTEX.x
     && pos.y <= LEFT_VERTEX.y) {
-        const values = pos.x <= (LEFT_VERTEX.x + RIGHT_VERTEX.x) / 2
+        const values = pos.x <= TOP_VERTEX.x
             ? calcLinearFctFactors(LEFT_VERTEX, TOP_VERTEX)
             : calcLinearFctFactors(TOP_VERTEX, RIGHT_VERTEX);
         const height = values.a * pos.x + values.b;
 
         return (pos.y >= height);
     }
-    return (0);
+    return (false);
 }
 
 //
