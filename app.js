@@ -81,11 +81,11 @@ function checkRingClick(pos) {
 }
 
 //
-// First, check if the X coordinate correspond to the triangle base and if the click is under the triangle
+// First, check if the X coordinate correspond to the triangle base and if the click is not under the triangle
 // Then, the left edge of the triangle is considered as an affine function
-// It calcultes the a factor and b value ( f(x) = a * x + b )
-// It calculates the affine function value using the X coordinate
-// Then, it check if the Y coordinate is superior than the height (Y increased as we go "down")
+// It calculates the a factor and b value ( f(x) = a * x + b )
+// It calculates the affine function value using the X coordinate (= height)
+// It checks if the Y coordinate is superior than the height (Y increase as we go "down")
 //
 function checkTriangleClick(pos) {
     const leftEdgeStart = {
