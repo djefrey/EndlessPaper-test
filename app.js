@@ -105,9 +105,9 @@ function checkRingClick(pos) {
 // It checks if the Y coordinate is superior than the height (Y increase as we go "down")
 //
 function checkTriangleClick(pos) {
-    if (pos.x >= CENTER.x - RADIUS && pos.x <= CENTER.y + RADIUS
+    if (pos.x >= LEFT_VERTEX.x && pos.x <= RIGHT_VERTEX.x
     && pos.y <= LEFT_VERTEX.y) {
-        const values = pos.x <= CENTER.x
+        const values = pos.x <= (LEFT_VERTEX.x + RIGHT_VERTEX.x) / 2
             ? calcLinearFctFactors(LEFT_VERTEX, TOP_VERTEX)
             : calcLinearFctFactors(TOP_VERTEX, RIGHT_VERTEX);
         const height = values.a * pos.x + values.b;
