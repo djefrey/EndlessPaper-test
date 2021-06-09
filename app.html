@@ -5,10 +5,16 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>EndlessPaper Test</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <script type="application/javascript" src='math.js'></script>
 </head>
 <body onload="drawCanvas()">
     <canvas width="800" height="800" id="canvas"></canvas>
-    <p id="result"></p>
+    <p id="result">None</p>
+    <button onclick="drawCanvas()">Reset</button>
+    <button onclick="testCircle()">Test circle</button>
+    <button onclick="testTriangle()">Test triangle</button>
     <script type="application/javascript" src='app.js'></script>
+    <script type="application/javascript" src='draw.js'></script>
+    <script type="application/javascript" src='tests.js'></script>
 </body>
 </html>
