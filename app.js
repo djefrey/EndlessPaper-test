@@ -45,8 +45,6 @@ function onClick(event) {
         case "triangle":
             const trianglePos = getTriangleClickPos(pos);
 
-            console.log(pos, trianglePos);
-
             resultText.innerHTML = "Triangle " + getTriangleValues(trianglePos);
             break;
         default:
@@ -181,16 +179,34 @@ function getVerticesWithTolerence(vertices)
         const after = (i < vertices.length - 1) ? vertices[i + 1] : vertices[0];
 
         const bfVec = getVectorFromPoints(before, vertices[i]);
-        const afVec = getVectorFromPoints(after, vertices[i]);
+        const afVec = getVectorFromPoints(vertices[i], after);
         const bfNorm = getVectorNormalized(bfVec);
         const afNorm = getVectorNormalized(afVec);
+        const bfPerp = getPerpendicularVectorClockwise(bfNorm);
+        const afPerp = getPerpendicularVectorClockwise(afNorm);
 
-        results[i] = {
-            x: vertices[i].x + (bfNorm.x + afNorm.x) * CLICK_TOLERENCE,
-            y: vertices[i].y + (bfNorm.y + afNorm.y) * CLICK_TOLERENCE,
-        };
+        const bfLine = getLinearFctWithTolerence(before, vertices[i], bfPerp);
+        const afLine = getLinearFctWithTolerence(vertices[i], after, afPerp);
+
+        results[i] = getIntersectionPoint(bfLine, afLine);
     }
     return (results);
+}
+
+//
+// Return the linear function corresponding to the parrallel line with CLICK_TOLERENCE offset
+//
+function getLinearFctWithTolerence(start, end, perpendical) {
+    const startOffset = {
+        x: start.x + perpendical.x * CLICK_TOLERENCE,
+        y: start.y + perpendical.y * CLICK_TOLERENCE,
+    };
+    const endOffset = {
+        x: end.x + perpendical.x * CLICK_TOLERENCE,
+        y: end.y + perpendical.y * CLICK_TOLERENCE,
+    };
+
+    return (calcLinearFctFactors(startOffset, endOffset));
 }
 
 //

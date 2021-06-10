@@ -3,10 +3,10 @@
 // a = (y2 - y1) / (x2 - x1)
 // b = y1 - a * y1
 //
-function calcLinearFctFactors(firstVertex, secondVertex)
+function calcLinearFctFactors(point1, point2)
 {
-    const a = (secondVertex.y - firstVertex.y) / (secondVertex.x - firstVertex.x);
-    const b = firstVertex.y - a * firstVertex.x;
+    const a = (point2.y - point1.y) / (point2.x - point1.x);
+    const b = point1.y - a * point1.x;
 
     return ({
         a: a,
@@ -96,9 +96,19 @@ function getIntersectionPoint(line1, line2) {
 }
 
 //
-// Return the perpendical vector
+// Return the perpendical vector clockwise
 //
-function getPerpendicularVector(vector) {
+function getPerpendicularVectorClockwise(vector) {
+    return ({
+        x: -vector.y,
+        y: vector.x,
+    });
+}
+
+//
+// Return the perpendical vector counter clockwise
+//
+function getPerpendicularVectorCounterClockwise(vector) {
     return ({
         x: vector.y,
         y: -vector.x,
