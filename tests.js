@@ -1,3 +1,28 @@
+function testGlobal() {
+    for (let y = 0; y < 800; y++) {
+        for (let x = 0; x < 800; x++) {
+            const pos = {
+                x: x,
+                y: y,
+            };
+            const result = checkClick(pos);
+
+            switch (result) {
+                case "ring":
+                    ctx.fillStyle = "#FF0";
+                    break;
+                case "triangle":
+                    ctx.fillStyle = "#0FF";
+                    break;
+                default:
+                    ctx.fillStyle = "#FFF";
+                    break;
+            }
+            ctx.fillRect(x, y, 1, 1);
+        }
+    }
+}
+
 function testCircle() {
     for (let y = 0; y < 800; y++) {
         for (let x = 0; x < 800; x++) {
@@ -23,7 +48,7 @@ function testTriangle() {
                 y: y,
             };
 
-            if (checkTriangleClickVector(pos))
+            if (checkTriangleClickVector(pos, true))
                 ctx.fillStyle = "#0F0";
             else
                 ctx.fillStyle = "#FFF";

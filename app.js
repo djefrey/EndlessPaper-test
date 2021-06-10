@@ -1,7 +1,7 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-const result = document.getElementById("result");
+const resultText = document.getElementById("result");
 
 const CENTER = {
     x: 400,
@@ -24,6 +24,8 @@ const RIGHT_VERTEX = {
     y: CENTER.y + (Math.sin(Math.PI / 6) * RADIUS) + 25,
 };
 
+const CLICK_TOLERENCE = 15;
+
 /* CLICK */
 
 document.addEventListener("click", onClick);
@@ -34,13 +36,36 @@ function onClick(event) {
         x: event.clientX - canvasBounds.x,
         y: event.clientY - canvasBounds.y,
     };
+    const result = checkClick(pos);
 
-    if (checkRingClick(pos))
-        result.innerHTML = "Ring " + getRingValue(pos);
-    else if (checkTriangleClickVector(pos))
-        result.innerHTML = "Triangle " + getTriangleValues(pos);
+    switch (result) {
+        case "ring":
+            resultText.innerHTML = "Ring " + getRingValue(pos);
+            break;
+        case "triangle":
+            const trianglePos = getTriangleClickPos(pos);
+
+            console.log(pos, trianglePos);
+
+            resultText.innerHTML = "Triangle " + getTriangleValues(trianglePos);
+            break;
+        default:
+            resultText.innerHTML = "None";
+            break;
+    }
+}
+
+//
+// Check if the position is inside the ring or the triangle
+// Return the return
+//
+function checkClick(pos) {
+    if (checkTriangleClickVector(pos, true))
+        return ("triangle");
+    else if (checkRingClick(pos))
+        return ("ring");
     else
-        result.innerHTML = "None";
+        return ("none");
 }
 
 //
@@ -53,7 +78,7 @@ function checkRingClick(pos) {
     const diffY = CENTER.y - pos.y;
     const dist = Math.sqrt(diffX * diffX + diffY * diffY);
 
-    return (dist >= RADIUS && dist <= RADIUS + RING_SIZE);
+    return (dist >= RADIUS - CLICK_TOLERENCE && dist <= RADIUS + RING_SIZE + CLICK_TOLERENCE);
 }
 
 //
@@ -97,8 +122,13 @@ function checkTriangleClickLinear(pos) {
 // It calculates the dot product to check if the position is on the left
 // If the position is on the right, then the position is outside the triangle
 //
-function checkTriangleClickVector(pos) {
-    const vertices = [LEFT_VERTEX, RIGHT_VERTEX, TOP_VERTEX];
+function checkTriangleClickVector(pos, enableTolerence) {
+    let vertices = [LEFT_VERTEX, RIGHT_VERTEX, TOP_VERTEX];
+
+    if (enableTolerence) {
+        let triangleCenter = getTriangleCenter(vertices);
+        vertices = getVerticesWithTolerence(vertices, triangleCenter);
+    }
 
     for (let i = 0; i < vertices.length; i++) {
         let start = vertices[i];
@@ -143,13 +173,50 @@ function getTriangleValues(pos) {
 }
 
 //
-// Return the distance between a given point and a line
+// Apply the tolerence to the vertices
+// Return an array with the vertices
 //
-// (d) = a * x + b
-// dist(A, (d)) = ABS(Ay - a * Ax - b) / SQRT(1 + a * a)
-//
-function getDistancePointToLine(pos, line) {
-    const value = Math.abs(pos.y - pos.x * line.a - line.b) / Math.sqrt(1 + line.a * line.a);
+function getVerticesWithTolerence(vertices, center)
+{
+    let results = [];
 
-    return (value);
+    for (let i = 0; i < vertices.length; i++) {
+        const vector = getVectorFromPoints(center, vertices[i]);
+        const normalized = getVectorNormalized(vector);
+
+        results[i] = {
+            x: vertices[i].x + normalized.x * CLICK_TOLERENCE,
+            y: vertices[i].y + normalized.y * CLICK_TOLERENCE,
+        }
+    }
+    return (results);
+}
+
+//
+// Return the pos inside the triangle without the tolerence
+// It finds the closest edge of the triangle and find the intersection point of the edge with the center of triangle -> pos
+//
+function getTriangleClickPos(pos) {
+    const vertices = [LEFT_VERTEX, RIGHT_VERTEX, TOP_VERTEX];
+    const triangleCenter = getTriangleCenter(vertices);
+    const posLine = calcLinearFctFactors(triangleCenter, pos);
+
+    let smallestDist = 1000000000;
+    let newPos = null;
+
+    if (checkTriangleClickVector(pos, false))
+        return (pos);
+
+    for (let i = 0; i < vertices.length; i++) {
+        const start = vertices[i];
+        const end = (i < vertices.length - 1) ? vertices[i + 1] : vertices[0];
+        const line = calcLinearFctFactors(start, end);
+        const pointDist = getDistancePointToLine(pos, line);
+
+        if (pointDist < smallestDist) {
+            smallestDist = pointDist;
+            newPos = getIntersectionPoint(line, posLine);
+        }
+    }
+    return (newPos);
 }
