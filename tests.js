@@ -9,13 +9,13 @@ function testGlobal() {
 
             switch (result) {
                 case "ring":
-                    ctx.fillStyle = "#FF0";
+                    ctx.fillStyle = "#FF09";
                     break;
                 case "triangle":
-                    ctx.fillStyle = "#0FF";
+                    ctx.fillStyle = "#0FF9";
                     break;
                 default:
-                    ctx.fillStyle = "#FFF";
+                    ctx.fillStyle = "#0000";
                     break;
             }
             ctx.fillRect(x, y, 1, 1);
@@ -32,9 +32,9 @@ function testCircle() {
             };
 
             if (checkRingClick(pos))
-                ctx.fillStyle = "#0F0";
+                ctx.fillStyle = "#0F09";
             else
-                ctx.fillStyle = "#FFF";
+                ctx.fillStyle = "#0000";
             ctx.fillRect(x, y, 1, 1);
         }
     }
@@ -49,9 +49,9 @@ function testTriangle() {
             };
 
             if (checkTriangleClickVector(pos, true))
-                ctx.fillStyle = "#0F0";
+                ctx.fillStyle = "#0F09";
             else
-                ctx.fillStyle = "#FFF";
+                ctx.fillStyle = "#0000";
             ctx.fillRect(x, y, 1, 1);
         }
     }
