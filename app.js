@@ -12,7 +12,7 @@ const RADIUS = 300;
 const RING_SIZE = 50;
 
 const LEFT_VERTEX = {
-    x: CENTER.x - (Math.cos(Math.PI / 6) * RADIUS) + 50 ,
+    x: CENTER.x - (Math.cos(Math.PI / 6) * RADIUS) + 50,
     y: CENTER.y + (Math.sin(Math.PI / 6) * RADIUS) - 20,
 };
 const TOP_VERTEX = {
@@ -74,9 +74,7 @@ function checkClick(pos) {
 // Check if the distance is between the two circles radius
 //
 function checkRingClick(pos) {
-    const diffX = CENTER.x - pos.x;
-    const diffY = CENTER.y - pos.y;
-    const dist = Math.sqrt(diffX * diffX + diffY * diffY);
+    const dist = getDistance(pos, CENTER);
 
     return (dist >= RADIUS - CLICK_TOLERENCE && dist <= RADIUS + RING_SIZE + CLICK_TOLERENCE);
 }
@@ -125,10 +123,8 @@ function checkTriangleClickLinear(pos) {
 function checkTriangleClickVector(pos, enableTolerence) {
     let vertices = [LEFT_VERTEX, RIGHT_VERTEX, TOP_VERTEX];
 
-    if (enableTolerence) {
-        let triangleCenter = getTriangleCenter(vertices);
-        vertices = getVerticesWithTolerence(vertices, triangleCenter);
-    }
+    if (enableTolerence)
+        vertices = getVerticesWithTolerence(vertices);
 
     for (let i = 0; i < vertices.length; i++) {
         let start = vertices[i];
@@ -176,18 +172,23 @@ function getTriangleValues(pos) {
 // Apply the tolerence to the vertices
 // Return an array with the vertices
 //
-function getVerticesWithTolerence(vertices, center)
+function getVerticesWithTolerence(vertices)
 {
     let results = [];
 
     for (let i = 0; i < vertices.length; i++) {
-        const vector = getVectorFromPoints(center, vertices[i]);
-        const normalized = getVectorNormalized(vector);
+        const before = (i > 0) ? vertices[i - 1] : vertices[vertices.length - 1];
+        const after = (i < vertices.length - 1) ? vertices[i + 1] : vertices[0];
+
+        const bfVec = getVectorFromPoints(before, vertices[i]);
+        const afVec = getVectorFromPoints(after, vertices[i]);
+        const bfNorm = getVectorNormalized(bfVec);
+        const afNorm = getVectorNormalized(afVec);
 
         results[i] = {
-            x: vertices[i].x + normalized.x * CLICK_TOLERENCE,
-            y: vertices[i].y + normalized.y * CLICK_TOLERENCE,
-        }
+            x: vertices[i].x + (bfNorm.x + afNorm.x) * CLICK_TOLERENCE,
+            y: vertices[i].y + (bfNorm.y + afNorm.y) * CLICK_TOLERENCE,
+        };
     }
     return (results);
 }

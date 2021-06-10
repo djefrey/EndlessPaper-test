@@ -94,3 +94,24 @@ function getIntersectionPoint(line1, line2) {
         y: y,
     });
 }
+
+//
+// Return the perpendical vector
+//
+function getPerpendicularVector(vector) {
+    return ({
+        x: vector.y,
+        y: -vector.x,
+    });
+}
+
+function dotProduct(vec1, vec2) {
+    return (vec1.x * vec2.x + vec1.y * vec2.y);
+}
+
+function getDistance(point1, point2) {
+    const diffX = point2.x - point1.x;
+    const diffY = point2.y - point1.y;
+
+    return (Math.sqrt(diffX * diffX + diffY * diffY));
+}
