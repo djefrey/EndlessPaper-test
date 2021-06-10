@@ -30,9 +30,9 @@ function getVectorFromPoints(start, end) {
 // Return the determinant of the two vectors
 //
 function calcVectorDeterminant(vec1, vec2) {
-    const dot = vec1.x * vec2.y - vec1.y * vec2.x;
+    const det = vec1.x * vec2.y - vec1.y * vec2.x;
 
-    return (dot);
+    return (det);
 }
 
 //
@@ -45,6 +45,24 @@ function getDistancePointToLine(pos, line) {
     const value = Math.abs(pos.y - pos.x * line.a - line.b) / Math.sqrt(1 + line.a * line.a);
 
     return (value);
+}
+
+//
+// Return the distance between a given point and a segment
+//
+function getDistancePointToSegment(pos, start, end) {
+    const vertexVec = getVectorFromPoints(start, end);
+    const posVec = getVectorFromPoints(start, pos);
+
+    let projection = dotProduct(posVec, vertexVec) / getVectorNormSquare(vertexVec);
+    projection = Math.max(0, Math.min(projection, 1));
+
+    const closestPoint = {
+        x: start.x + vertexVec.x * projection,
+        y: start.y + vertexVec.y * projection,
+    };
+
+    return (getDistance(closestPoint, pos));
 }
 
 //
@@ -117,6 +135,14 @@ function getPerpendicularVectorCounterClockwise(vector) {
 
 function dotProduct(vec1, vec2) {
     return (vec1.x * vec2.x + vec1.y * vec2.y);
+}
+
+function getVectorNorm(vector) {
+    return (Math.sqrt(vector.x * vector.x + vector.y * vector.y));
+}
+
+function getVectorNormSquare(vector) {
+    return (vector.x * vector.x + vector.y * vector.y);
 }
 
 function getDistance(point1, point2) {

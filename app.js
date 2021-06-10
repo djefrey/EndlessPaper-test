@@ -58,10 +58,13 @@ function onClick(event) {
 // Return the return
 //
 function checkClick(pos) {
-    if (checkTriangleClickVector(pos, true))
-        return ("triangle");
-    else if (checkRingClick(pos))
-        return ("ring");
+    const ring = sdfRing(pos, CENTER, RADIUS, RING_SIZE);
+    const triangle = sdfTriangle(pos, [LEFT_VERTEX, RIGHT_VERTEX, TOP_VERTEX]);
+
+    if (ring < 0 || triangle < 0)
+        return (triangle < 0 ? "triangle" : "ring");
+    else if (ring < CLICK_TOLERENCE || triangle < CLICK_TOLERENCE)
+        return (triangle < ring ? "triangle" : "ring");
     else
         return ("none");
 }
@@ -180,10 +183,10 @@ function getVerticesWithTolerence(vertices)
 
         const bfVec = getVectorFromPoints(before, vertices[i]);
         const afVec = getVectorFromPoints(vertices[i], after);
-        const bfNorm = getVectorNormalized(bfVec);
-        const afNorm = getVectorNormalized(afVec);
-        const bfPerp = getPerpendicularVectorClockwise(bfNorm);
-        const afPerp = getPerpendicularVectorClockwise(afNorm);
+        const bfNormalize = getVectorNormalized(bfVec);
+        const afNormalize = getVectorNormalized(afVec);
+        const bfPerp = getPerpendicularVectorClockwise(bfNormalize);
+        const afPerp = getPerpendicularVectorClockwise(afNormalize);
 
         const bfLine = getLinearFctWithTolerence(before, vertices[i], bfPerp);
         const afLine = getLinearFctWithTolerence(vertices[i], after, afPerp);
@@ -219,7 +222,7 @@ function getTriangleClickPos(pos) {
     const posLine = calcLinearFctFactors(triangleCenter, pos);
 
     let smallestDist = 1000000000;
-    let newPos = null;
+    let newPos = pos;
 
     if (checkTriangleClickVector(pos, false))
         return (pos);
@@ -231,8 +234,13 @@ function getTriangleClickPos(pos) {
         const pointDist = getDistancePointToLine(pos, line);
 
         if (pointDist < smallestDist) {
+            let intersection = getIntersectionPoint(line, posLine);
+
+            if (intersection.x < start.x || intersection.x > end.x
+                || intersection.y < start.y || intersection.y > end.y)
+                continue;
             smallestDist = pointDist;
-            newPos = getIntersectionPoint(line, posLine);
+            newPos = intersection;
         }
     }
     return (newPos);
